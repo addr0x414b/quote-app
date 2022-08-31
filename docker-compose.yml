@@ -1,0 +1,22 @@
+version: '3.0'
+
+services:
+  app:
+    build: quote-app
+    container_name: quote-app-container
+    ports:
+      - '80:80'
+  server:
+    build: server
+    container_name: server-container
+    ports:
+      - '3000:3000'
+    links:
+      - database
+  database:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./database:/data/db
