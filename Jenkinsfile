@@ -1,14 +1,14 @@
 pipeline {
     agent any
+    envrionment {
+        DOCKERHUB_CREDENTIALS=credentials('dockerhub-cred')
+    }
     stages {
         stage("Verify tooling") {
             steps {
                 sh '''
                     docker version
                     docker info
-                    docker-compose version
-                    curl --version
-                    jq --version
                 '''
             }
         }
@@ -20,20 +20,24 @@ pipeline {
         }
         stage("Build image") {
             steps {
-                sh 'docker build -t quote-app-client quote-app'
+                sh 'docker build -t addr0x414b/quote-app-client:latest quote-app'
                 sh 'docker image ls'
             }
         }
-        stage("Run client") {
+        stage("Login to Dockerhub") {
             steps {
-                sh 'docker run -d -p 80:80 quote-app-client'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage("Push to Dockerhub") {
+            steps {
+                sh 'docker push addr0x414b/quote-app-client:latest'
             }
         }
     }
     post {
         always {
-            sh 'docker container stop $(docker container list -q)'
-            sh 'docker container ls'
+            sh 'docker logout'
         }
     }
 }
