@@ -37,7 +37,7 @@ pipeline {
         stage("Run on production server") {
             steps {
                 sshagent(['prod-server']) {
-                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com docker run -p 80:80 -d --name quote-app-client addr0x414b/quote-app-client:latest'
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker run -p 80:80 -d --name quote-app-client addr0x414b/quote-app-client:latest'
                 }
 
             }
