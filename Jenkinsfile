@@ -18,9 +18,15 @@ pipeline {
                 sh 'docker image prune'
             }
         }
-        stage("Build image") {
+        stage("Build client image") {
             steps {
                 sh 'docker build -t addr0x414b/quote-app-client:latest quote-app'
+                sh 'docker image ls'
+            }
+        }
+        stage("Build server image") {
+            steps {
+                sh 'docker build -t addr0x414b/quote-app-server:latest server'
                 sh 'docker image ls'
             }
         }
@@ -34,18 +40,27 @@ pipeline {
                 sh 'docker push addr0x414b/quote-app-client:latest'
             }
         }
-        stage("Run on client on production server") {
+        stage("Push server to Dockerhub") {
+            steps {
+                sh 'docker push addr0x414b/quote-app-server:latest'
+            }
+        }
+        stage("Run client on production server") {
             steps {
                 sshagent(['prod-server']) {
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker ps -f name=quote-app-client -q | xargs --no-run-if-empty sudo docker container stop'
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker container ls -a -fname=quote-app-client -q | xargs -r sudo docker container rm'
                     sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker run -p 80:80 -d --name quote-app-client addr0x414b/quote-app-client:latest'
                 }
 
             }
         }
-        stage("Run on database on production server") {
+        stage("Run server on production server") {
             steps {
                 sshagent(['prod-server']) {
-                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker run -p 27017:27017 -d --name mongo -v /home/ec2-user/database:/data/db mongo'
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker ps -f name=quote-app-server -q | xargs --no-run-if-empty sudo docker container stop'
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker container ls -a -fname=quote-app-server -q | xargs -r sudo docker container rm'
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker run -p 3000:3000 -d --name quote-app-server addr0x414b/quote-app-server:latest'
                 }
 
             }
