@@ -49,7 +49,7 @@ pipeline {
             steps {
                 sshagent(['prod-server']) {
                     sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker stop quote-app-client'
-                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker rm quote-app-client '
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker rm quote-app-client'
                     sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker run -p 80:80 -d --name quote-app-client addr0x414b/quote-app-client:latest'
                 }
 
@@ -58,6 +58,7 @@ pipeline {
         stage("Run server on production server") {
             steps {
                 sshagent(['prod-server']) {
+                    sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker rm quote-app-server'
                     sh 'ssh -o StrictHostKeyChecking=no ec2-user@ec2-54-176-65-224.us-west-1.compute.amazonaws.com sudo docker run -p 3000:3000 -d --name quote-app-server addr0x414b/quote-app-server:latest'
                 }
 
