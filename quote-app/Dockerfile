@@ -8,7 +8,8 @@ WORKDIR /app
 COPY . .
 
 # Install node dependencies and build the Angular app
-RUN npm install && npm run ng build
+RUN npm install
+RUN node_modules/.bin/ng build
 
 # Use nginx to run our built Angular app
 FROM nginx:latest
