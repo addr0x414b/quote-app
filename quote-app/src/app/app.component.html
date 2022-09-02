@@ -1,3 +1,8 @@
-<h1 class="text-3xl font-bold underline">
-  Tailwind
-</h1>
+<app-navbar></app-navbar>
+<div *ngIf="getQuoteCount() == 0">
+    <app-new-quote></app-new-quote>
+</div>
+
+<div *ngIf="getQuoteCount() != 0">
+    <app-quote-card></app-quote-card>
+</div>
