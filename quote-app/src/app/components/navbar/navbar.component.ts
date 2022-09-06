@@ -8,9 +8,17 @@ import { QuotesService } from 'src/app/services/quotes.service';
 })
 export class NavbarComponent implements OnInit {
 
+  addingQuote: boolean = false;
   constructor(private qs: QuotesService) { }
 
   ngOnInit(): void {
+    this.qs.getAddingQuote().subscribe((b) => {
+      this.addingQuote = b;
+    });
+  }
+
+  addQuote(): void {
+    this.qs.toggleAddingQuote();
   }
 
   getQuoteCount(): number {

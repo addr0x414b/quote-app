@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Quote } from '../models/Quote';
 
 @Injectable({
@@ -8,6 +9,8 @@ export class QuotesService {
 
   constructor() { }
 
+  private addingQuote: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private addQuoteB: boolean = false;
   private quoteCount: number = 3;
   private quotes: Quote[] = [
     {
@@ -34,6 +37,15 @@ export class QuotesService {
 
   getQuoteCount(): number {
     return this.quoteCount;
+  }
+
+  getAddingQuote(): Observable<boolean> {
+    return this.addingQuote.asObservable();
+  }
+
+  toggleAddingQuote(): void {
+    this.addQuoteB= !this.addQuoteB;
+    this.addingQuote.next(this.addQuoteB)
   }
 
   getRandomQuote(): Quote {

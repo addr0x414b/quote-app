@@ -9,7 +9,15 @@ import { QuotesService } from './services/quotes.service';
 export class AppComponent {
   title = 'quote-app';
 
+  addingQuote: boolean = false;
+
   constructor(private qs: QuotesService) {}
+
+  ngOnInit(): void {
+    this.qs.getAddingQuote().subscribe((b) => {
+      this.addingQuote = b;
+    });
+  }
 
   getQuoteCount(): number {
     return this.qs.getQuoteCount();

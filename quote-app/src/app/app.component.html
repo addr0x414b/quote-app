@@ -1,8 +1,8 @@
 <app-navbar></app-navbar>
-<div *ngIf="getQuoteCount() == 0">
+<div *ngIf="getQuoteCount() == 0 || addingQuote">
     <app-new-quote></app-new-quote>
 </div>
 
-<div *ngIf="getQuoteCount() != 0">
+<div *ngIf="getQuoteCount() != 0 && !addingQuote">
     <app-quote-card></app-quote-card>
 </div>
